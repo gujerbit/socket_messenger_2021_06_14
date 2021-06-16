@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import server.Server;
+import server.ServerCloseThread;
 
 public class Main {
-	private static String name = "";
-	
+
 	public static void main(String[] args) {
 		try {
 			System.out.println("서버 생성중...");
@@ -17,7 +17,10 @@ public class Main {
 			System.out.println("서버 생성 완료");
 			Map<String, Socket> clients = new HashMap<String, Socket>();
 			
-			while(true) {
+			Thread serverCloseThread = new Thread(new ServerCloseThread(server, clients));
+			serverCloseThread.start();
+
+			while (true) {
 				Socket client = server.accept();
 				Thread serverThread = new Thread(new Server(client, clients, server));
 				serverThread.start();
@@ -26,5 +29,5 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
